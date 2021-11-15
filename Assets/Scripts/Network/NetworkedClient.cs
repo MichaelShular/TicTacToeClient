@@ -122,6 +122,10 @@ public class NetworkedClient : MonoBehaviour
                 gameSystemManager.ChangeGameState(GameState.GameMenu);
             }
         }
+        else if(signifier == ServerToClientSignifiers.GameSessionStarted)
+        {
+            gameSystemManager.ChangeGameState(GameState.PlayingTicTacToe);
+        }
 
     }
 
@@ -135,11 +139,20 @@ public static class ClientToServerSignifiers
     public const int Login = 1;
 
     public const int CreateAccount = 2;
+
+    public const int StartLookingForPlayer = 3;
+
+    public const int TicTacToeMove = 4;
 }
 
 public static class ServerToClientSignifiers
 {
     public const int LoginResponses = 1;
+    
+    public const int GameSessionStarted = 2;
+
+    public const int OppnentTicTacToePlay = 3;
+
 }
 
 public static class LoginResponses

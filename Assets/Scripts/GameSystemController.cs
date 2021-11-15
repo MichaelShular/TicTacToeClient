@@ -7,12 +7,13 @@ public class GameSystemController : MonoBehaviour
 {
     GameObject inputUsername, inputPassword, submitButton, toggleLogin, toggleCreate;
     GameObject NetworkClient;
-    [SerializeField] private Canvas loginMenu, gameMenu, waiting, playingGame; 
+    [SerializeField] private Canvas loginMenu, gameMenu, waiting;
+    GameObject findGame;
     // Start is called before the first frame update
     void Start()
     {
         NetworkClient = GameObject.Find("NetworkController");
-        GameObject[] allgameObjects = GameObject.FindGameObjectsWithTag("LoginMenuGameObjects");
+        GameObject[] allgameObjects = GameObject.FindGameObjectsWithTag("MenuGameObjects");
         
         foreach(GameObject go in allgameObjects)
         {
@@ -36,12 +37,16 @@ public class GameSystemController : MonoBehaviour
             {
                 toggleCreate = go;
             }
+            else if(go.name == "FindGame")
+            {
+                findGame = go;
+            }
         }
 
         submitButton.GetComponent<Button>().onClick.AddListener(submitButtonPressed);
         toggleLogin.GetComponent<Toggle>().onValueChanged.AddListener(ToggleLoginValueChange);
         toggleCreate.GetComponent<Toggle>().onValueChanged.AddListener(ToggleCreateValueChange);
-
+        findGame.GetComponent<Button>().onClick.AddListener(StartGameButton);
         ChangeGameState(GameState.LoginMenu);
     }
 
@@ -63,7 +68,12 @@ public class GameSystemController : MonoBehaviour
         {
             NetworkClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.CreateAccount + "," + n + "," + p);
         }
+    }
 
+    public void StartGameButton()
+    {
+        NetworkClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.StartLookingForPlayer + "");
+        ChangeGameState(GameState.WaitingForGame);
     }
     public void ToggleLoginValueChange(bool newVal)
     {
@@ -76,7 +86,7 @@ public class GameSystemController : MonoBehaviour
     
     public void ChangeGameState(int newState)
     {
-        loginMenu.enabled = gameMenu.enabled = false; 
+        loginMenu.enabled = gameMenu.enabled = waiting.enabled = false; 
         switch (newState)
         {
             case 1:
@@ -86,6 +96,7 @@ public class GameSystemController : MonoBehaviour
                 gameMenu.enabled = true;
                 break;
             case 3:
+                waiting.enabled = true;
                 break;
             case 4:
                 break;
