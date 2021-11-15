@@ -17,9 +17,13 @@ public class NetworkedClient : MonoBehaviour
     bool isConnected = false;
     int ourClientID;
 
+    GameSystemController gameSystemManager;
+
     // Start is called before the first frame update
     void Start()
     {
+        gameSystemManager = this.GetComponent<GameSystemController>();
+
         Connect();
     }
 
@@ -105,12 +109,46 @@ public class NetworkedClient : MonoBehaviour
     private void ProcessRecievedMsg(string msg, int id)
     {
         Debug.Log("msg recieved = " + msg + ".  connection id = " + id);
+
+        string[] csv = msg.Split(',');
+        int signifier = int.Parse(csv[0]);
+
+        if(signifier == ServerToClientSignifiers.LoginResponses)
+        {
+            int loginResult = int.Parse(csv[1]);
+
+            if(loginResult == LoginResponses.Success)
+            {
+                gameSystemManager.ChangeGameState(GameState.GameMenu);
+            }
+        }
+
     }
 
     public bool IsConnected()
     {
         return isConnected;
     }
+}
+public static class ClientToServerSignifiers
+{
+    public const int Login = 1;
 
+    public const int CreateAccount = 2;
+}
 
+public static class ServerToClientSignifiers
+{
+    public const int LoginResponses = 1;
+}
+
+public static class LoginResponses
+{
+    public const int Success = 1;
+
+    public const int FailureNameInUse = 2;
+
+    public const int FailureNameNotFound = 3;
+
+    public const int FailureIncorrectPassword = 4;
 }

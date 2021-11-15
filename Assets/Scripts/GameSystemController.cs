@@ -7,6 +7,7 @@ public class GameSystemController : MonoBehaviour
 {
     GameObject inputUsername, inputPassword, submitButton, toggleLogin, toggleCreate;
     GameObject NetworkClient;
+    [SerializeField] private Canvas loginMenu, gameMenu, waiting, playingGame; 
     // Start is called before the first frame update
     void Start()
     {
@@ -41,6 +42,7 @@ public class GameSystemController : MonoBehaviour
         toggleLogin.GetComponent<Toggle>().onValueChanged.AddListener(ToggleLoginValueChange);
         toggleCreate.GetComponent<Toggle>().onValueChanged.AddListener(ToggleCreateValueChange);
 
+        ChangeGameState(GameState.LoginMenu);
     }
 
     // Update is called once per frame
@@ -71,28 +73,36 @@ public class GameSystemController : MonoBehaviour
     {
         toggleLogin.GetComponent<Toggle>().SetIsOnWithoutNotify(!newVal);
     }
+    
+    public void ChangeGameState(int newState)
+    {
+        loginMenu.enabled = gameMenu.enabled = false; 
+        switch (newState)
+        {
+            case 1:
+                loginMenu.enabled = true;
+                break;
+            case 2:
+                gameMenu.enabled = true;
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            default:
+                Debug.Log("Unknownstate");
+                break;
+        }
+    }
 }
 
-public static class ClientToServerSignifiers
+public static class GameState
 {
-    public const int Login = 1;
+    public const int LoginMenu = 1;
 
-    public const int CreateAccount = 2;   
+    public const int GameMenu = 2;
+
+    public const int WaitingForGame = 3;
+
+    public const int PlayingTicTacToe = 4;
 }
-
-public static class ServerToClientSignifiers
-{
-    public const int LoginResponses = 1;
-}
-
-public static class LoginResponses
-{
-    public const int Success = 1;
-
-    public const int FailureNameInUse = 2;
-
-    public const int FailureNameNotFound = 3;
-
-    public const int FailureIncorrectPassword = 4;
-}
-
