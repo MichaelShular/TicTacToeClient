@@ -2655,6 +2655,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentBoxState: 2
+  gameController: {fileID: 0}
 --- !u!114 &1587296247
 MonoBehaviour:
   m_ObjectHideFlags: 0
