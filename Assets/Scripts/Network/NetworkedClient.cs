@@ -141,12 +141,19 @@ public class NetworkedClient : MonoBehaviour
             {
                 gameController.SetWhichPlayer(BoxStates.PLAYERTWO);
             }
+            if (gameResult == GameResponses.observer)
+            {
+                gameController.SetWhichPlayer(BoxStates.NONE);
+            }
         }
         else if (signifier == ServerToClientSignifiers.messagingAnotherPlayer)
         {
             gameMessages.displayMessageChat(csv[1]);
         }
-
+        else if (signifier == ServerToClientSignifiers.OppnentTicTacToePlay)
+        {
+            gameController.currentPlayerAction = !gameController.currentPlayerAction;
+        }
     }
 
     public bool IsConnected()
@@ -165,6 +172,8 @@ public static class ClientToServerSignifiers
     public const int TicTacToeMove = 4;
 
     public const int messagingAnotherPlayer = 5;
+
+    public const int lookForGameToWatch = 6;
 }
 
 public static class ServerToClientSignifiers
@@ -178,6 +187,8 @@ public static class ServerToClientSignifiers
     public const int GameResponses = 4;
 
     public const int messagingAnotherPlayer = 5;
+
+    public const int lookforGameResponses = 6;
 }
 
 public static class LoginResponses
@@ -191,6 +202,13 @@ public static class LoginResponses
     public const int FailureIncorrectPassword = 4;
 }
 
+public static class lookforGameResponses
+{
+    public const int Success = 1;
+
+    public const int Fail = 2;
+
+}
 public static class GameResponses
 {
     public const int playerOne = 1;

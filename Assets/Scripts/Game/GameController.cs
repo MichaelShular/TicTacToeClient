@@ -13,6 +13,8 @@ public class GameController : MonoBehaviour
 
     private Vector3[] winList;
 
+    GameObject NetworkClient;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,6 +29,8 @@ public class GameController : MonoBehaviour
         }
         roleInGame = BoxStates.NONE;
         currentPlayerAction = false;
+
+        NetworkClient = GameObject.Find("NetworkController");
     }
 
     // Update is called once per frame
@@ -67,4 +71,14 @@ public class GameController : MonoBehaviour
         roleInGame = a;
     }
 
+    public void SetWhichPlayerTurn(bool a)
+    {
+        currentPlayerAction = a;
+    }
+
+    public void setNextPlayerTurnToServer()
+    {
+        currentPlayerAction = !currentPlayerAction;
+        NetworkClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.TicTacToeMove + "");
+    }
 }

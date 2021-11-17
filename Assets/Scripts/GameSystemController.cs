@@ -5,9 +5,9 @@ using UnityEngine.UI;
 
 public class GameSystemController : MonoBehaviour
 {
-    GameObject inputUsername, inputPassword, submitButton, toggleLogin, toggleCreate;
+    GameObject inputUsername, inputPassword, submitButton, toggleLogin, toggleCreate, observeGame, observeGameNumber;
     GameObject NetworkClient;
-    [SerializeField] private Canvas loginMenu, gameMenu, waiting;
+    [SerializeField] private Canvas loginMenu, gameMenu, waiting, chooseGameRoom;
     GameObject findGame;
     // Start is called before the first frame update
     void Start()
@@ -41,12 +41,21 @@ public class GameSystemController : MonoBehaviour
             {
                 findGame = go;
             }
+            else if (go.name == "ObserveGame")
+            {
+                observeGame = go;
+            }
+            else if (go.name == "ObserveGameNumber")
+            {
+                observeGameNumber = go;
+            }
         }
 
         submitButton.GetComponent<Button>().onClick.AddListener(submitButtonPressed);
         toggleLogin.GetComponent<Toggle>().onValueChanged.AddListener(ToggleLoginValueChange);
         toggleCreate.GetComponent<Toggle>().onValueChanged.AddListener(ToggleCreateValueChange);
         findGame.GetComponent<Button>().onClick.AddListener(StartGameButton);
+        observeGame.GetComponent<Button>().onClick.AddListener(observeAnotherGame);
         ChangeGameState(GameState.LoginMenu);
     }
 
@@ -73,6 +82,13 @@ public class GameSystemController : MonoBehaviour
         }
     }
 
+    public void observeAnotherGame()
+    {
+        string n = observeGameNumber.GetComponent<InputField>().text;
+
+        NetworkClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.lookForGameToWatch + "," + n);
+        ChangeGameState(GameState.lookForGameToWatch);
+    }
     public void StartGameButton()
     {
         NetworkClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.StartLookingForPlayer + "");
@@ -89,7 +105,7 @@ public class GameSystemController : MonoBehaviour
     
     public void ChangeGameState(int newState)
     {
-        loginMenu.enabled = gameMenu.enabled = waiting.enabled = false; 
+        loginMenu.enabled = gameMenu.enabled = waiting.enabled = chooseGameRoom.enabled = false; 
         switch (newState)
         {
             case 1:
@@ -102,6 +118,9 @@ public class GameSystemController : MonoBehaviour
                 waiting.enabled = true;
                 break;
             case 4:
+                break;
+            case 5:
+                //chooseGameRoom.enabled = true;
                 break;
             default:
                 Debug.Log("Unknownstate");
@@ -119,4 +138,6 @@ public static class GameState
     public const int WaitingForGame = 3;
 
     public const int PlayingTicTacToe = 4;
+
+    public const int lookForGameToWatch = 5;
 }
