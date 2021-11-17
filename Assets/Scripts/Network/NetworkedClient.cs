@@ -19,12 +19,14 @@ public class NetworkedClient : MonoBehaviour
 
     GameSystemController gameSystemManager;
     GameController gameController;
+    GameMessages gameMessages;
 
     // Start is called before the first frame update
     void Start()
     {
         gameSystemManager = this.GetComponent<GameSystemController>();
         gameController = GameObject.Find("GameState").GetComponent<GameController>();
+        gameMessages = GameObject.Find("GameUI").GetComponent<GameMessages>();
         Connect();
     }
 
@@ -140,6 +142,10 @@ public class NetworkedClient : MonoBehaviour
                 gameController.SetWhichPlayer(BoxStates.PLAYERTWO);
             }
         }
+        else if (signifier == ServerToClientSignifiers.messagingAnotherPlayer)
+        {
+            gameMessages.displayMessageChat(csv[1]);
+        }
 
     }
 
@@ -157,6 +163,8 @@ public static class ClientToServerSignifiers
     public const int StartLookingForPlayer = 3;
 
     public const int TicTacToeMove = 4;
+
+    public const int messagingAnotherPlayer = 5;
 }
 
 public static class ServerToClientSignifiers
@@ -169,6 +177,7 @@ public static class ServerToClientSignifiers
 
     public const int GameResponses = 4;
 
+    public const int messagingAnotherPlayer = 5;
 }
 
 public static class LoginResponses

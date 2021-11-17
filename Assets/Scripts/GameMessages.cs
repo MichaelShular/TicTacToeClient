@@ -7,10 +7,12 @@ public class GameMessages : MonoBehaviour
 {
     public GameObject Text;
     public GameObject contentPanel;
+    GameObject NetworkClient;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        NetworkClient = GameObject.Find("NetworkController");
     }
 
     // Update is called once per frame
@@ -38,6 +40,14 @@ public class GameMessages : MonoBehaviour
     {
         GameObject temp = Instantiate(Text, contentPanel.transform);
         temp.transform.SetParent(contentPanel.transform);
+        temp.GetComponent<Text>().text = a;
+        NetworkClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.messagingAnotherPlayer + "," + a);  
+    }
+
+    public void displayMessageChat(string a)
+    {
+        GameObject temp = Instantiate(Text, contentPanel.transform);
+        temp.transform.SetParent(contentPanel.transform); 
         temp.GetComponent<Text>().text = a;
     }
 }
