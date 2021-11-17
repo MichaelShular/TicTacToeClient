@@ -35,16 +35,19 @@ public class boxFieldController : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (GameObject.Find("GameState").GetComponent<GameController>().currentPlayerAction)
+        BoxStates role = GameObject.Find("GameState").GetComponent<GameController>().roleInGame;
+
+        if (role == BoxStates.PLAYERONE)
         {
             currentBoxState = BoxStates.PLAYERONE;
             gameController.checkIfThereIsWinner(currentBoxState);
         }
-        else
+        else if(role == BoxStates.PLAYERTWO)
         {
             currentBoxState = BoxStates.PLAYERTWO;
             gameController.checkIfThereIsWinner(currentBoxState);
         }
-        GameObject.Find("GameState").GetComponent<GameController>().currentPlayerAction = !GameObject.Find("GameState").GetComponent<GameController>().currentPlayerAction;
+        //GameObject.Find("GameState").GetComponent<GameController>().currentPlayerAction = !GameObject.Find("GameState").GetComponent<GameController>().currentPlayerAction;
     }
+
 }

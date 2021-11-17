@@ -2572,7 +2572,7 @@ GameObject:
   - component: {fileID: 1587296249}
   m_Layer: 0
   m_Name: Square
-  m_TagString: Untagged
+  m_TagString: Box
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

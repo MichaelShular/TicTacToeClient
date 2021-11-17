@@ -9,6 +9,7 @@ public class GameController : MonoBehaviour
     public GameObject[] allCurrentBoxState;
     
     public bool currentPlayerAction;
+    public BoxStates roleInGame;
 
     private Vector3[] winList;
 
@@ -24,17 +25,14 @@ public class GameController : MonoBehaviour
             tempGameObject.GetComponent<boxFieldController>().currentBoxState = BoxStates.NONE;
             allCurrentBoxState[i] = tempGameObject;
         }
-
+        roleInGame = BoxStates.NONE;
         currentPlayerAction = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(allCurrentBoxState[0].GetComponent<boxFieldController>().currentBoxState == BoxStates.PLAYERONE)
-        {
-            
-        }
+
     }
 
     private void winnerStatesCreation()
@@ -62,6 +60,11 @@ public class GameController : MonoBehaviour
                 Debug.Log("Winner");
             }
         }
+    }
+
+    public void SetWhichPlayer(BoxStates a)
+    {
+        roleInGame = a;
     }
 
 }

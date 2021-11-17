@@ -18,12 +18,13 @@ public class NetworkedClient : MonoBehaviour
     int ourClientID;
 
     GameSystemController gameSystemManager;
+    GameController gameController;
 
     // Start is called before the first frame update
     void Start()
     {
         gameSystemManager = this.GetComponent<GameSystemController>();
-
+        gameController = GameObject.Find("GameState").GetComponent<GameController>();
         Connect();
     }
 
@@ -126,6 +127,19 @@ public class NetworkedClient : MonoBehaviour
         {
             gameSystemManager.ChangeGameState(GameState.PlayingTicTacToe);
         }
+        else if(signifier == ServerToClientSignifiers.GameResponses)
+        {
+            int gameResult = int.Parse(csv[1]);
+
+            if (gameResult == GameResponses.playerOne)
+            {
+                gameController.SetWhichPlayer(BoxStates.PLAYERONE);
+            }
+            if (gameResult == GameResponses.playerTwo)
+            {
+                gameController.SetWhichPlayer(BoxStates.PLAYERTWO);
+            }
+        }
 
     }
 
@@ -153,6 +167,8 @@ public static class ServerToClientSignifiers
 
     public const int OppnentTicTacToePlay = 3;
 
+    public const int GameResponses = 4;
+
 }
 
 public static class LoginResponses
@@ -164,4 +180,14 @@ public static class LoginResponses
     public const int FailureNameNotFound = 3;
 
     public const int FailureIncorrectPassword = 4;
+}
+
+public static class GameResponses
+{
+    public const int playerOne = 1;
+
+    public const int playerTwo = 2;
+
+    public const int observer = 3;
+
 }
