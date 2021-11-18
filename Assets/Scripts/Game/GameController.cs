@@ -18,6 +18,7 @@ public class GameController : MonoBehaviour
 
     public int currentTurn;
     public int lastPlayedBox;
+    public bool matchOver;
 
     public GameObject Text;
 
@@ -40,6 +41,7 @@ public class GameController : MonoBehaviour
         currentPlayerAction = false;
         currentTurn = 0;
         NetworkClient = GameObject.Find("NetworkController");
+        matchOver = false;
 
     }
 
@@ -83,13 +85,20 @@ public class GameController : MonoBehaviour
         if (a == BoxStates.PLAYERONE)
         {
             Text.GetComponent<Text>().text = "Player One Wins";
-            NetworkClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.matchIsOver + "," + (int)a);
         }
         else
         {
-            Text.GetComponent<Text>().text = "Player Two Wins";
+            Text.GetComponent<Text>().text = "Player Two Wins";      
+        }
+        if(matchOver == true)
+        {
+            return;
+        }
+        else
+        {
             NetworkClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.matchIsOver + "," + (int)a);
         }
+        matchOver = true;
     }
 
     public void SetWhichPlayer(BoxStates a)
@@ -109,10 +118,21 @@ public class GameController : MonoBehaviour
     public void setNextPlayerTurnToServer()
     {
         currentTurn++;
-
         currentPlayerAction = !currentPlayerAction;
         //GameObject.Find("GameUI").GetComponent<GameMessages>().displayMessageChat(lastPlayedBox.ToString());
         NetworkClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.TicTacToeMove + "," + currentTurn + "," + lastPlayedBox);
+    }
+
+    public void gameReset()
+    {
+        foreach (GameObject box in allCurrentBoxState)
+        {
+            box.GetComponent<boxFieldController>().currentBoxState = BoxStates.NONE;
+            
+        }
+        currentTurn = 0;
+        currentPlayerAction = false;
+        matchOver = false;
     }
 
     public void updateBoardState(int whichBox, int whichPlayer)

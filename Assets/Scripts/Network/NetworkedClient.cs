@@ -159,7 +159,8 @@ public class NetworkedClient : MonoBehaviour
         }
         else if (signifier == ServerToClientSignifiers.matchIsOver)
         {
-            gameController.whoWon((BoxStates)int.Parse(csv[1]));
+            gameController.matchOver = true;
+            gameController.whoWon((BoxStates)int.Parse(csv[1]));            
         }
 
     }

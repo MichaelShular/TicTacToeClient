@@ -77,6 +77,7 @@ public class GameSystemController : MonoBehaviour
     public void backToMenuButton()
     {
         ChangeGameState(GameState.GameMenu);
+        GameObject.Find("GameState").GetComponent<GameController>().gameReset();
     }
     public void submitButtonPressed() 
     {
