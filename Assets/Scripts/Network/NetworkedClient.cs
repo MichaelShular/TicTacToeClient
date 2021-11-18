@@ -157,6 +157,11 @@ public class NetworkedClient : MonoBehaviour
             gameController.updateBoardState(int.Parse(csv[2]), int.Parse(csv[3]));
             gameController.currentPlayerAction = !gameController.currentPlayerAction;
         }
+        else if (signifier == ServerToClientSignifiers.matchIsOver)
+        {
+            gameController.whoWon((BoxStates)int.Parse(csv[1]));
+        }
+
     }
 
     public bool IsConnected()
@@ -177,6 +182,9 @@ public static class ClientToServerSignifiers
     public const int messagingAnotherPlayer = 5;
 
     public const int lookForGameToWatch = 6;
+
+    public const int matchIsOver = 7;
+
 }
 
 public static class ServerToClientSignifiers
@@ -192,6 +200,8 @@ public static class ServerToClientSignifiers
     public const int messagingAnotherPlayer = 5;
 
     public const int lookforGameResponses = 6;
+
+    public const int matchIsOver = 7;
 }
 
 public static class LoginResponses

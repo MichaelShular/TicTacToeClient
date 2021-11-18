@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
     [SerializeField] private Transform[] boxPositions;
     [SerializeField] GameObject boxField;
     public GameObject[] allCurrentBoxState;
-    
+
     public bool currentPlayerAction;
     public BoxStates roleInGame;
 
@@ -17,6 +18,8 @@ public class GameController : MonoBehaviour
 
     public int currentTurn;
     public int lastPlayedBox;
+
+    public GameObject Text;
 
 
     // Start is called before the first frame update
@@ -37,6 +40,7 @@ public class GameController : MonoBehaviour
         currentPlayerAction = false;
         currentTurn = 0;
         NetworkClient = GameObject.Find("NetworkController");
+
     }
 
     // Update is called once per frame
@@ -63,12 +67,28 @@ public class GameController : MonoBehaviour
 
         for (int i = 0; i < winList.Length; i++)
         {
-            if(allCurrentBoxState[Mathf.RoundToInt(winList[i].x)].GetComponent<boxFieldController>().currentBoxState == a &&
+            if (allCurrentBoxState[Mathf.RoundToInt(winList[i].x)].GetComponent<boxFieldController>().currentBoxState == a &&
                 allCurrentBoxState[Mathf.RoundToInt(winList[i].y)].GetComponent<boxFieldController>().currentBoxState == a &&
                 allCurrentBoxState[Mathf.RoundToInt(winList[i].z)].GetComponent<boxFieldController>().currentBoxState == a)
             {
                 Debug.Log("Winner");
+                whoWon(a);
             }
+        }
+    }
+
+    public void whoWon(BoxStates a)
+    {
+        NetworkClient.GetComponent<GameSystemController>().ChangeGameState(GameState.matchFinished);
+        if (a == BoxStates.PLAYERONE)
+        {
+            Text.GetComponent<Text>().text = "Player One Wins";
+            NetworkClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.matchIsOver + "," + (int)a);
+        }
+        else
+        {
+            Text.GetComponent<Text>().text = "Player Two Wins";
+            NetworkClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.matchIsOver + "," + (int)a);
         }
     }
 
@@ -89,9 +109,9 @@ public class GameController : MonoBehaviour
     public void setNextPlayerTurnToServer()
     {
         currentTurn++;
-         
+
         currentPlayerAction = !currentPlayerAction;
-        GameObject.Find("GameUI").GetComponent<GameMessages>().displayMessageChat(lastPlayedBox.ToString());
+        //GameObject.Find("GameUI").GetComponent<GameMessages>().displayMessageChat(lastPlayedBox.ToString());
         NetworkClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.TicTacToeMove + "," + currentTurn + "," + lastPlayedBox);
     }
 

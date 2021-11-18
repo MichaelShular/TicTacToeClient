@@ -5,9 +5,9 @@ using UnityEngine.UI;
 
 public class GameSystemController : MonoBehaviour
 {
-    GameObject inputUsername, inputPassword, submitButton, toggleLogin, toggleCreate, observeGame, observeGameNumber;
+    GameObject inputUsername, inputPassword, submitButton, toggleLogin, toggleCreate, observeGame, observeGameNumber, backToMenu;
     GameObject NetworkClient;
-    [SerializeField] private Canvas loginMenu, gameMenu, waiting, chooseGameRoom;
+    [SerializeField] private Canvas loginMenu, gameMenu, waiting, chooseGameRoom, matchFinished;
     GameObject findGame;
     // Start is called before the first frame update
     void Start()
@@ -49,8 +49,14 @@ public class GameSystemController : MonoBehaviour
             {
                 observeGameNumber = go;
             }
+            else if (go.name == "BackToMenu")
+            {
+                backToMenu = go;
+            }
+
         }
 
+        backToMenu.GetComponent<Button>().onClick.AddListener(backToMenuButton);
         submitButton.GetComponent<Button>().onClick.AddListener(submitButtonPressed);
         toggleLogin.GetComponent<Toggle>().onValueChanged.AddListener(ToggleLoginValueChange);
         toggleCreate.GetComponent<Toggle>().onValueChanged.AddListener(ToggleCreateValueChange);
@@ -66,6 +72,11 @@ public class GameSystemController : MonoBehaviour
         {
             Application.Quit();
         }
+    }
+
+    public void backToMenuButton()
+    {
+        ChangeGameState(GameState.GameMenu);
     }
     public void submitButtonPressed() 
     {
@@ -105,7 +116,7 @@ public class GameSystemController : MonoBehaviour
     
     public void ChangeGameState(int newState)
     {
-        loginMenu.enabled = gameMenu.enabled = waiting.enabled = chooseGameRoom.enabled = false; 
+        loginMenu.enabled = gameMenu.enabled = waiting.enabled = chooseGameRoom.enabled = matchFinished.enabled = false; 
         switch (newState)
         {
             case 1:
@@ -121,6 +132,9 @@ public class GameSystemController : MonoBehaviour
                 break;
             case 5:
                 //chooseGameRoom.enabled = true;
+                break;
+            case 6:
+                matchFinished.enabled = true;
                 break;
             default:
                 Debug.Log("Unknownstate");
@@ -140,4 +154,6 @@ public static class GameState
     public const int PlayingTicTacToe = 4;
 
     public const int lookForGameToWatch = 5;
+
+    public const int matchFinished = 6;
 }
