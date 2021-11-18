@@ -152,6 +152,9 @@ public class NetworkedClient : MonoBehaviour
         }
         else if (signifier == ServerToClientSignifiers.OppnentTicTacToePlay)
         {
+            gameController.currentTurn = int.Parse(csv[1]);
+            Debug.Log(int.Parse(csv[2]));
+            gameController.updateBoardState(int.Parse(csv[2]), int.Parse(csv[3]));
             gameController.currentPlayerAction = !gameController.currentPlayerAction;
         }
     }
@@ -211,10 +214,10 @@ public static class lookforGameResponses
 }
 public static class GameResponses
 {
+    public const int observer = 0;
+
     public const int playerOne = 1;
 
     public const int playerTwo = 2;
-
-    public const int observer = 3;
 
 }

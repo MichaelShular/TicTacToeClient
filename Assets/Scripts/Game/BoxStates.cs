@@ -5,7 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public enum BoxStates
 {
+   NONE,
    PLAYERONE,
-   PLAYERTWO,
-   NONE
+   PLAYERTWO
 }

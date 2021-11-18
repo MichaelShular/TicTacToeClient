@@ -15,6 +15,10 @@ public class GameController : MonoBehaviour
 
     GameObject NetworkClient;
 
+    public int currentTurn;
+    public int lastPlayedBox;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -25,11 +29,13 @@ public class GameController : MonoBehaviour
             GameObject tempGameObject = Instantiate(boxField);
             tempGameObject.transform.position = boxPositions[i].position;
             tempGameObject.GetComponent<boxFieldController>().currentBoxState = BoxStates.NONE;
+            tempGameObject.GetComponent<boxFieldController>().boxID = i;
+
             allCurrentBoxState[i] = tempGameObject;
         }
         roleInGame = BoxStates.NONE;
         currentPlayerAction = false;
-
+        currentTurn = 0;
         NetworkClient = GameObject.Find("NetworkController");
     }
 
@@ -76,9 +82,21 @@ public class GameController : MonoBehaviour
         currentPlayerAction = a;
     }
 
+    public void setLastPlayedBox(int a)
+    {
+        lastPlayedBox = a;
+    }
     public void setNextPlayerTurnToServer()
     {
+        currentTurn++;
+         
         currentPlayerAction = !currentPlayerAction;
-        NetworkClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.TicTacToeMove + "");
+        GameObject.Find("GameUI").GetComponent<GameMessages>().displayMessageChat(lastPlayedBox.ToString());
+        NetworkClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.TicTacToeMove + "," + currentTurn + "," + lastPlayedBox);
+    }
+
+    public void updateBoardState(int whichBox, int whichPlayer)
+    {
+        allCurrentBoxState[whichBox].GetComponent<boxFieldController>().currentBoxState = (BoxStates)whichPlayer;
     }
 }

@@ -5,6 +5,7 @@ public class boxFieldController : MonoBehaviour
 {
     public BoxStates currentBoxState;
     public GameController gameController;
+    public int boxID;
     // Start is called before the first frame update
     void Start()
     {
@@ -42,17 +43,19 @@ public class boxFieldController : MonoBehaviour
         {
             currentBoxState = BoxStates.PLAYERONE;
             gameController.checkIfThereIsWinner(currentBoxState);
+            gameController.setLastPlayedBox(boxID);
             gameController.setNextPlayerTurnToServer();
-
+            
         }
         else if(role == BoxStates.PLAYERTWO && yourTurn)
         {
             currentBoxState = BoxStates.PLAYERTWO;
             gameController.checkIfThereIsWinner(currentBoxState);
-            gameController.setNextPlayerTurnToServer();
-
+            gameController.setLastPlayedBox(boxID);
+            gameController.setNextPlayerTurnToServer(); 
         }
         //GameObject.Find("GameState").GetComponent<GameController>().currentPlayerAction = !GameObject.Find("GameState").GetComponent<GameController>().currentPlayerAction;
     }
+
 
 }
