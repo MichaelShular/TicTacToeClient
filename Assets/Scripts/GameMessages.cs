@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+//Summary: Used to display chat messages and send messages prefixed messages to other player  
 public class GameMessages : MonoBehaviour
 {
     public GameObject Text;
@@ -14,13 +15,6 @@ public class GameMessages : MonoBehaviour
     {
         NetworkClient = GameObject.Find("NetworkController");
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void prefixedMessageOne()
     {
         whatMessage("Hi");
@@ -43,7 +37,6 @@ public class GameMessages : MonoBehaviour
         temp.GetComponent<Text>().text = a;
         NetworkClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.messagingAnotherPlayer + "," + a);  
     }
-
     public void displayMessageChat(string a)
     {
         GameObject temp = Instantiate(Text, contentPanel.transform);

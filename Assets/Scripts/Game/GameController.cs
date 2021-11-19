@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+//Summary: Use to control the logic of the TicTacToe game
 public class GameController : MonoBehaviour
 {
     [SerializeField] private Transform[] boxPositions;
@@ -10,7 +11,7 @@ public class GameController : MonoBehaviour
     public GameObject[] allCurrentBoxState;
 
     public bool currentPlayerAction;
-    public BoxStates roleInGame;
+    public PlayerStates roleInGame;
 
     private Vector3[] winList;
 
@@ -33,12 +34,12 @@ public class GameController : MonoBehaviour
         {
             GameObject tempGameObject = Instantiate(boxField);
             tempGameObject.transform.position = boxPositions[i].position;
-            tempGameObject.GetComponent<boxFieldController>().currentBoxState = BoxStates.NONE;
+            tempGameObject.GetComponent<boxFieldController>().currentBoxState = PlayerStates.NONE;
             tempGameObject.GetComponent<boxFieldController>().boxID = i;
 
             allCurrentBoxState[i] = tempGameObject;
         }
-        roleInGame = BoxStates.NONE;
+        roleInGame = PlayerStates.NONE;
         currentPlayerAction = false;
         currentTurn = 0;
         NetworkClient = GameObject.Find("NetworkController");
@@ -64,7 +65,7 @@ public class GameController : MonoBehaviour
         winList[6] = new Vector3(0, 4, 8);
         winList[7] = new Vector3(2, 4, 6);
     }
-    public void checkIfThereIsWinner(BoxStates a)
+    public void checkIfThereIsWinner(PlayerStates a)
     {
         //012,345,678,036,147,258,048,246
 
@@ -80,10 +81,10 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public void whoWon(BoxStates a)
+    public void whoWon(PlayerStates a)
     {
-        NetworkClient.GetComponent<GameSystemController>().ChangeGameState(GameState.matchFinished);
-        if (a == BoxStates.PLAYERONE)
+        NetworkClient.GetComponent<GameSystemController>().ChangeUICanvas(GameState.matchFinished);
+        if (a == PlayerStates.PLAYERONE)
         {
             Text.GetComponent<Text>().text = "Player One Wins";
         }
@@ -102,7 +103,7 @@ public class GameController : MonoBehaviour
         matchOver = true;
     }
 
-    public void SetWhichPlayer(BoxStates a)
+    public void SetWhichPlayer(PlayerStates a)
     {
         roleInGame = a;
     }
@@ -128,7 +129,7 @@ public class GameController : MonoBehaviour
     {
         foreach (GameObject box in allCurrentBoxState)
         {
-            box.GetComponent<boxFieldController>().currentBoxState = BoxStates.NONE;
+            box.GetComponent<boxFieldController>().currentBoxState = PlayerStates.NONE;
 
         }
         currentTurn = 0;
@@ -138,7 +139,7 @@ public class GameController : MonoBehaviour
 
     public void updateBoardState(int whichBox, int whichPlayer)
     {
-        allCurrentBoxState[whichBox].GetComponent<boxFieldController>().currentBoxState = (BoxStates)whichPlayer;
+        allCurrentBoxState[whichBox].GetComponent<boxFieldController>().currentBoxState = (PlayerStates)whichPlayer;
     }
 
     public void setMovesForReplay(int a)
@@ -153,11 +154,11 @@ public class GameController : MonoBehaviour
         {
             if (!currentPlayerAction)
             {
-                roleInGame = BoxStates.PLAYERONE;
+                roleInGame = PlayerStates.PLAYERONE;
             }
             else
             {
-                roleInGame = BoxStates.PLAYERTWO;
+                roleInGame = PlayerStates.PLAYERTWO;
             }
             Debug.Log(currentTurn);
             Debug.Log(movesMadeForReplay.Count);
@@ -176,10 +177,27 @@ public class GameController : MonoBehaviour
         if (currentTurn > 0)
         {
             currentTurn--;
-            allCurrentBoxState[temp[currentTurn]].GetComponent<boxFieldController>().currentBoxState = BoxStates.NONE;
+            allCurrentBoxState[temp[currentTurn]].GetComponent<boxFieldController>().currentBoxState = PlayerStates.NONE;
 
             currentPlayerAction = !currentPlayerAction;
             
         }
+    }
+
+    public void updateObserverView(int a)
+    {
+        
+
+        if (!currentPlayerAction)
+        {
+            roleInGame = PlayerStates.PLAYERONE;
+        }
+        else
+        {
+            roleInGame = PlayerStates.PLAYERTWO;
+        }
+        allCurrentBoxState[a].GetComponent<boxFieldController>().currentBoxState = roleInGame;
+        currentPlayerAction = !currentPlayerAction;
+        roleInGame = PlayerStates.NONE;
     }
 }

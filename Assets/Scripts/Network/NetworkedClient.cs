@@ -4,6 +4,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
+//Summary: Used to initialize connection to server, process messages for server and hold signifiers classes to determine the type of message 
 public class NetworkedClient : MonoBehaviour
 {
 
@@ -122,12 +123,12 @@ public class NetworkedClient : MonoBehaviour
 
             if(loginResult == LoginResponses.Success)
             {
-                gameSystemManager.ChangeGameState(GameState.GameMenu);
+                gameSystemManager.ChangeUICanvas(GameState.GameMenu);
             }
         }
         else if(signifier == ServerToClientSignifiers.GameSessionStarted)
         {
-            gameSystemManager.ChangeGameState(GameState.PlayingTicTacToe);
+            gameSystemManager.ChangeUICanvas(GameState.PlayingTicTacToe);
         }
         else if(signifier == ServerToClientSignifiers.GameResponses)
         {
@@ -135,15 +136,15 @@ public class NetworkedClient : MonoBehaviour
 
             if (gameResult == GameResponses.playerOne)
             {
-                gameController.SetWhichPlayer(BoxStates.PLAYERONE);
+                gameController.SetWhichPlayer(PlayerStates.PLAYERONE);
             }
             if (gameResult == GameResponses.playerTwo)
             {
-                gameController.SetWhichPlayer(BoxStates.PLAYERTWO);
+                gameController.SetWhichPlayer(PlayerStates.PLAYERTWO);
             }
             if (gameResult == GameResponses.observer)
             {
-                gameController.SetWhichPlayer(BoxStates.NONE);
+                gameController.SetWhichPlayer(PlayerStates.NONE);
             }
         }
         else if (signifier == ServerToClientSignifiers.messagingAnotherPlayer)
@@ -160,7 +161,7 @@ public class NetworkedClient : MonoBehaviour
         else if (signifier == ServerToClientSignifiers.matchIsOver)
         {
             gameController.matchOver = true;
-            gameController.whoWon((BoxStates)int.Parse(csv[1]));            
+            gameController.whoWon((PlayerStates)int.Parse(csv[1]));            
         }
         else if (signifier == ServerToClientSignifiers.sendReplay)
         {
@@ -168,6 +169,13 @@ public class NetworkedClient : MonoBehaviour
             {
                 Debug.Log(csv[i]);
                 gameController.movesMadeForReplay.Add(int.Parse(csv[i]));
+            }
+        }
+        else if (signifier == ServerToClientSignifiers.lookforGameResponses && int.Parse(csv[1]) == lookforGameResponses.Success)
+        {
+            for (int i = 2; i < (csv.Length - 1); i++)
+            {
+                gameController.updateObserverView(int.Parse(csv[i]));
             }
         }
 

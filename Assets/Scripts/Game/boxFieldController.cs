@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+//Summary: Used to to control what will happen when a player clicks on a TictacToe box
 public class boxFieldController : MonoBehaviour
 {
-    public BoxStates currentBoxState;
+    public PlayerStates currentBoxState;
     public GameController gameController;
     public int boxID;
     // Start is called before the first frame update
@@ -15,11 +17,11 @@ public class boxFieldController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(currentBoxState == BoxStates.PLAYERONE)
+        if(currentBoxState == PlayerStates.PLAYERONE)
         {
             this.GetComponent<SpriteRenderer>().color = Color.blue;
         }
-        else if(currentBoxState == BoxStates.PLAYERTWO)
+        else if(currentBoxState == PlayerStates.PLAYERTWO)
         {
             this.GetComponent<SpriteRenderer>().color = Color.red;
         }
@@ -30,28 +32,28 @@ public class boxFieldController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            currentBoxState = BoxStates.NONE;
+            currentBoxState = PlayerStates.NONE;
         }
     }
 
     private void OnMouseDown()
     {
-        BoxStates role = GameObject.Find("GameState").GetComponent<GameController>().roleInGame;
+        PlayerStates role = GameObject.Find("GameState").GetComponent<GameController>().roleInGame;
         bool yourTurn = GameObject.Find("GameState").GetComponent<GameController>().currentPlayerAction;
 
-        if (BoxStates.NONE == 0)
+        if (PlayerStates.NONE == 0)
         {
-            if (role == BoxStates.PLAYERONE && !yourTurn)
+            if (role == PlayerStates.PLAYERONE && !yourTurn)
             {
-                currentBoxState = BoxStates.PLAYERONE;                
+                currentBoxState = PlayerStates.PLAYERONE;                
                 gameController.setLastPlayedBox(boxID);
                 gameController.setNextPlayerTurnToServer();
                 gameController.checkIfThereIsWinner(currentBoxState);
 
             }
-            else if (role == BoxStates.PLAYERTWO && yourTurn)
+            else if (role == PlayerStates.PLAYERTWO && yourTurn)
             {
-                currentBoxState = BoxStates.PLAYERTWO;            
+                currentBoxState = PlayerStates.PLAYERTWO;            
                 gameController.setLastPlayedBox(boxID);
                 gameController.setNextPlayerTurnToServer();
                 gameController.checkIfThereIsWinner(currentBoxState);

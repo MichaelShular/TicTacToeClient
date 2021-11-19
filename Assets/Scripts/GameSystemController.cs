@@ -3,18 +3,44 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+//Used to control what canvas a player will see and functionality to most UI elements in
 public class GameSystemController : MonoBehaviour
 {
-    GameObject inputUsername, inputPassword, submitButton, toggleLogin, toggleCreate, observeGame, observeGameNumber, backToMenu, replayGameButton, replayGameID, backToMenuFromReplay;
-    GameObject NetworkClient;
+    //interactive UI elements
+    GameObject inputUsername, inputPassword, submitButton, toggleLogin, toggleCreate, observeGame, observeGameNumber, backToMenu, replayGameButton, replayGameID, backToMenuFromReplay, findGame;
+
     [SerializeField] private Canvas loginMenu, gameMenu, waiting, chooseGameRoom, matchFinished, replayGame;
-    GameObject findGame;
+
+    GameObject NetworkClient;
+
     // Start is called before the first frame update
     void Start()
     {
         NetworkClient = GameObject.Find("NetworkController");
+
+        SettingUIElements();
+        AddingListeners();
+        
+        //scene player loads into
+        ChangeUICanvas(GameState.LoginMenu);
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        //allow user to quit game
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+    }
+
+    //Used to variables to gameObjects in scene 
+    private void SettingUIElements()
+    {
         GameObject[] allgameObjects = GameObject.FindGameObjectsWithTag("MenuGameObjects");
 
+        //Finding gameObjects in scene 
         foreach (GameObject go in allgameObjects)
         {
             if (go.name == "Username")
@@ -66,7 +92,11 @@ public class GameSystemController : MonoBehaviour
                 backToMenuFromReplay = go;
             }
         }
+    }
 
+    //Used to add listeners to interactive UI elements
+    private void AddingListeners()
+    {
         backToMenuFromReplay.GetComponent<Button>().onClick.AddListener(backToMenuButton);
         backToMenu.GetComponent<Button>().onClick.AddListener(backToMenuButton);
         submitButton.GetComponent<Button>().onClick.AddListener(submitButtonPressed);
@@ -75,23 +105,16 @@ public class GameSystemController : MonoBehaviour
         findGame.GetComponent<Button>().onClick.AddListener(StartGameButton);
         observeGame.GetComponent<Button>().onClick.AddListener(observeAnotherGame);
         replayGameButton.GetComponent<Button>().onClick.AddListener(replayAnotherGame);
-        ChangeGameState(GameState.LoginMenu);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Application.Quit();
-        }
-    }
-
+    //change state to GameMenu and reset game values 
     public void backToMenuButton()
     {
-        ChangeGameState(GameState.GameMenu);
+        ChangeUICanvas(GameState.GameMenu);
         GameObject.Find("GameState").GetComponent<GameController>().gameReset();
     }
+    
+    //submit account information in LoginMenu
     public void submitButtonPressed()
     {
         string n = inputUsername.GetComponent<InputField>().text;
@@ -107,25 +130,32 @@ public class GameSystemController : MonoBehaviour
         }
     }
 
+    //find a replay of a game base on ID from input field 
     public void replayAnotherGame()
     {
         string n = replayGameID.GetComponent<InputField>().text;
 
         NetworkClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.findReplay + "," + n);
-        ChangeGameState(GameState.showAReplayOfgame);
+        ChangeUICanvas(GameState.showAReplayOfgame);
     }
+
+    //observe a game base on ID of a player currently in a game session
     public void observeAnotherGame()
     {
         string n = observeGameNumber.GetComponent<InputField>().text;
 
         NetworkClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.lookForGameToWatch + "," + n);
-        ChangeGameState(GameState.lookForGameToWatch);
+        ChangeUICanvas(GameState.lookForGameToWatch);
     }
+
+    //notify server play is look for oppenent and change state to WaitingForGame  
     public void StartGameButton()
     {
         NetworkClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.StartLookingForPlayer + "");
-        ChangeGameState(GameState.WaitingForGame);
+        ChangeUICanvas(GameState.WaitingForGame);
     }
+
+    //the two toggle control if the sever will creating a new account or load an exsiting account 
     public void ToggleLoginValueChange(bool newVal)
     {
         toggleCreate.GetComponent<Toggle>().SetIsOnWithoutNotify(!newVal);
@@ -134,10 +164,13 @@ public class GameSystemController : MonoBehaviour
     {
         toggleLogin.GetComponent<Toggle>().SetIsOnWithoutNotify(!newVal);
     }
-    
-    public void ChangeGameState(int newState)
+
+    //controls which canvas are visable based on state
+    public void ChangeUICanvas(int newState)
     {
-        loginMenu.enabled = gameMenu.enabled = waiting.enabled = chooseGameRoom.enabled = matchFinished.enabled = replayGame.enabled = false; 
+        //disable all canvas so multiple canvas arent active
+        loginMenu.enabled = gameMenu.enabled = waiting.enabled = chooseGameRoom.enabled = matchFinished.enabled = replayGame.enabled = false;
+        
         switch (newState)
         {
             case 1:
@@ -167,6 +200,7 @@ public class GameSystemController : MonoBehaviour
     }
 }
 
+//A class of signifiers to used to switch the canvas in game
 public static class GameState
 {
     public const int LoginMenu = 1;
@@ -180,7 +214,7 @@ public static class GameState
     public const int lookForGameToWatch = 5;
 
     public const int matchFinished = 6;
-    
+
     public const int showAReplayOfgame = 7;
 
 }
