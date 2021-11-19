@@ -5,19 +5,19 @@ using UnityEngine.UI;
 
 public class GameSystemController : MonoBehaviour
 {
-    GameObject inputUsername, inputPassword, submitButton, toggleLogin, toggleCreate, observeGame, observeGameNumber, backToMenu;
+    GameObject inputUsername, inputPassword, submitButton, toggleLogin, toggleCreate, observeGame, observeGameNumber, backToMenu, replayGameButton, replayGameID, backToMenuFromReplay;
     GameObject NetworkClient;
-    [SerializeField] private Canvas loginMenu, gameMenu, waiting, chooseGameRoom, matchFinished;
+    [SerializeField] private Canvas loginMenu, gameMenu, waiting, chooseGameRoom, matchFinished, replayGame;
     GameObject findGame;
     // Start is called before the first frame update
     void Start()
     {
         NetworkClient = GameObject.Find("NetworkController");
         GameObject[] allgameObjects = GameObject.FindGameObjectsWithTag("MenuGameObjects");
-        
-        foreach(GameObject go in allgameObjects)
+
+        foreach (GameObject go in allgameObjects)
         {
-            if(go.name == "Username")
+            if (go.name == "Username")
             {
                 inputUsername = go;
             }
@@ -37,7 +37,7 @@ public class GameSystemController : MonoBehaviour
             {
                 toggleCreate = go;
             }
-            else if(go.name == "FindGame")
+            else if (go.name == "FindGame")
             {
                 findGame = go;
             }
@@ -53,15 +53,28 @@ public class GameSystemController : MonoBehaviour
             {
                 backToMenu = go;
             }
-
+            else if (go.name == "ReplayGame")
+            {
+                replayGameButton = go;
+            }
+            else if (go.name == "ReplayGameID")
+            {
+                replayGameID = go;
+            }
+            else if (go.name == "BackToGameMenu")
+            {
+                backToMenuFromReplay = go;
+            }
         }
 
+        backToMenuFromReplay.GetComponent<Button>().onClick.AddListener(backToMenuButton);
         backToMenu.GetComponent<Button>().onClick.AddListener(backToMenuButton);
         submitButton.GetComponent<Button>().onClick.AddListener(submitButtonPressed);
         toggleLogin.GetComponent<Toggle>().onValueChanged.AddListener(ToggleLoginValueChange);
         toggleCreate.GetComponent<Toggle>().onValueChanged.AddListener(ToggleCreateValueChange);
         findGame.GetComponent<Button>().onClick.AddListener(StartGameButton);
         observeGame.GetComponent<Button>().onClick.AddListener(observeAnotherGame);
+        replayGameButton.GetComponent<Button>().onClick.AddListener(replayAnotherGame);
         ChangeGameState(GameState.LoginMenu);
     }
 
@@ -79,7 +92,7 @@ public class GameSystemController : MonoBehaviour
         ChangeGameState(GameState.GameMenu);
         GameObject.Find("GameState").GetComponent<GameController>().gameReset();
     }
-    public void submitButtonPressed() 
+    public void submitButtonPressed()
     {
         string n = inputUsername.GetComponent<InputField>().text;
         string p = inputPassword.GetComponent<InputField>().text;
@@ -94,6 +107,13 @@ public class GameSystemController : MonoBehaviour
         }
     }
 
+    public void replayAnotherGame()
+    {
+        string n = replayGameID.GetComponent<InputField>().text;
+
+        NetworkClient.GetComponent<NetworkedClient>().SendMessageToHost(ClientToServerSignifiers.findReplay + "," + n);
+        ChangeGameState(GameState.showAReplayOfgame);
+    }
     public void observeAnotherGame()
     {
         string n = observeGameNumber.GetComponent<InputField>().text;
@@ -117,7 +137,7 @@ public class GameSystemController : MonoBehaviour
     
     public void ChangeGameState(int newState)
     {
-        loginMenu.enabled = gameMenu.enabled = waiting.enabled = chooseGameRoom.enabled = matchFinished.enabled = false; 
+        loginMenu.enabled = gameMenu.enabled = waiting.enabled = chooseGameRoom.enabled = matchFinished.enabled = replayGame.enabled = false; 
         switch (newState)
         {
             case 1:
@@ -136,6 +156,9 @@ public class GameSystemController : MonoBehaviour
                 break;
             case 6:
                 matchFinished.enabled = true;
+                break;
+            case 7:
+                replayGame.enabled = true;
                 break;
             default:
                 Debug.Log("Unknownstate");
@@ -157,4 +180,7 @@ public static class GameState
     public const int lookForGameToWatch = 5;
 
     public const int matchFinished = 6;
+    
+    public const int showAReplayOfgame = 7;
+
 }

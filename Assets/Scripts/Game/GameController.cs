@@ -22,6 +22,7 @@ public class GameController : MonoBehaviour
 
     public GameObject Text;
 
+    public List<int> movesMadeForReplay;
 
     // Start is called before the first frame update
     void Start()
@@ -42,7 +43,7 @@ public class GameController : MonoBehaviour
         currentTurn = 0;
         NetworkClient = GameObject.Find("NetworkController");
         matchOver = false;
-
+        movesMadeForReplay = new List<int>();
     }
 
     // Update is called once per frame
@@ -88,9 +89,9 @@ public class GameController : MonoBehaviour
         }
         else
         {
-            Text.GetComponent<Text>().text = "Player Two Wins";      
+            Text.GetComponent<Text>().text = "Player Two Wins";
         }
-        if(matchOver == true)
+        if (matchOver == true)
         {
             return;
         }
@@ -128,7 +129,7 @@ public class GameController : MonoBehaviour
         foreach (GameObject box in allCurrentBoxState)
         {
             box.GetComponent<boxFieldController>().currentBoxState = BoxStates.NONE;
-            
+
         }
         currentTurn = 0;
         currentPlayerAction = false;
@@ -138,5 +139,47 @@ public class GameController : MonoBehaviour
     public void updateBoardState(int whichBox, int whichPlayer)
     {
         allCurrentBoxState[whichBox].GetComponent<boxFieldController>().currentBoxState = (BoxStates)whichPlayer;
+    }
+
+    public void setMovesForReplay(int a)
+    {
+        movesMadeForReplay.Add(a);
+    }
+
+    public void nextButtonPressed()
+    {
+        int[] temp = movesMadeForReplay.ToArray();
+        if (currentTurn < temp.Length)
+        {
+            if (!currentPlayerAction)
+            {
+                roleInGame = BoxStates.PLAYERONE;
+            }
+            else
+            {
+                roleInGame = BoxStates.PLAYERTWO;
+            }
+            Debug.Log(currentTurn);
+            Debug.Log(movesMadeForReplay.Count);
+
+            allCurrentBoxState[temp[currentTurn]].GetComponent<boxFieldController>().currentBoxState = roleInGame;
+
+            currentPlayerAction = !currentPlayerAction;
+            currentTurn++;
+        }
+
+    }
+
+    public void perButtonPressed()
+    {
+        int[] temp = movesMadeForReplay.ToArray();
+        if (currentTurn > 0)
+        {
+            currentTurn--;
+            allCurrentBoxState[temp[currentTurn]].GetComponent<boxFieldController>().currentBoxState = BoxStates.NONE;
+
+            currentPlayerAction = !currentPlayerAction;
+            
+        }
     }
 }

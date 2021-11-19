@@ -162,6 +162,14 @@ public class NetworkedClient : MonoBehaviour
             gameController.matchOver = true;
             gameController.whoWon((BoxStates)int.Parse(csv[1]));            
         }
+        else if (signifier == ServerToClientSignifiers.sendReplay)
+        {
+            for (int i = 1; i < (csv.Length -1); i++)
+            {
+                Debug.Log(csv[i]);
+                gameController.movesMadeForReplay.Add(int.Parse(csv[i]));
+            }
+        }
 
     }
 
@@ -186,6 +194,8 @@ public static class ClientToServerSignifiers
 
     public const int matchIsOver = 7;
 
+    public const int findReplay = 8;
+
 }
 
 public static class ServerToClientSignifiers
@@ -203,6 +213,9 @@ public static class ServerToClientSignifiers
     public const int lookforGameResponses = 6;
 
     public const int matchIsOver = 7;
+
+    public const int sendReplay = 8;
+
 }
 
 public static class LoginResponses
